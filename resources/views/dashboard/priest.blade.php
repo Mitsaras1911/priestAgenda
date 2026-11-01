@@ -1,0 +1,16 @@
+@extends('layouts.app')
+@section('content')
+<span class="eyebrow">{{ __('ui.priest_dashboard') }}</span><h1 style="font:42px Georgia,serif">{{ __('ui.your_appointments') }}</h1>
+<p class="muted">{{ __('ui.review_requests') }}</p>
+@if(!auth()->user()->is_priest_verified)<div class="notice">{{ __('ui.priest_verification_pending') }}</div>@endif
+@if(auth()->user()->is_confessor && !auth()->user()->is_confessor_verified)<div class="notice">{{ __('ui.confessor_verification_pending') }}</div>@endif
+<p><a class="btn secondary" href="{{ route('dashboard.calendar') }}">{{ __('ui.open_calendar') }}</a> <a class="btn secondary" href="{{ route('dashboard.archive') }}">{{ __('ui.archive') }}</a> <a class="btn secondary" href="{{ route('dashboard.privacy.export') }}">{{ __('ui.download_my_data') }}</a> <a class="btn secondary" href="{{ route('dashboard.profile.edit') }}">{{ __('ui.set_hours') }}</a> @if(auth()->user()->slug && auth()->user()->is_priest_verified)<a class="btn" href="{{ route('priests.show',auth()->user()->slug) }}">{{ __('ui.view_public_page') }}</a>@endif</p>
+<div class="section">
+@forelse($appointments as $appointment)
+<article class="card section"><div class="row"><div><span class="pill">{{ __('ui.'.$appointment->status) }}</span><h3>{{ __('ui.'.$appointment->service_type) }} · {{ $appointment->starts_at->translatedFormat('D, M j, Y · g:i A') }}</h3><p>{{ __('ui.from') }} {{ $appointment->requester->name }} @if($appointment->requester->email && !str_ends_with($appointment->requester->email,'@sms.priestagenda.invalid'))· {{ $appointment->requester->email }}@endif @if($appointment->requester->phone)· {{ $appointment->requester->phone }}@endif</p><p>{{ $appointment->message }}</p></div>
+<div><a class="btn secondary" href="{{ route('dashboard.appointments.messages',$appointment) }}">{{ __('ui.open_conversation') }}@if($appointment->messages()->whereNull('read_at')->where('sender_id',$appointment->requester_id)->exists()) · {{ __('ui.new_message') }}@endif</a>
+@if(auth()->user()->is_priest_verified && auth()->user()->approval_status==='approved' && $appointment->status==='pending')<form method="post" action="{{ route('dashboard.appointments.respond',$appointment) }}" style="margin-top:12px">@csrf<div class="field"><label>{{ __('ui.approval_response') }}</label><textarea name="priest_response" maxlength="2000">{{ old('priest_response',__('ui.approval_default')) }}</textarea></div><button class="btn" name="decision" value="confirmed">{{ __('ui.approve_and_notify') }}</button></form><form method="post" action="{{ route('dashboard.appointments.respond',$appointment) }}">@csrf<input type="hidden" name="decision" value="declined"><div class="field"><label>{{ __('ui.decline_response') }}</label><textarea name="priest_response" maxlength="2000">{{ old('priest_response',__('ui.decline_default')) }}</textarea></div><div class="field"><label>{{ __('ui.alternative_time_optional') }}</label><input type="datetime-local" name="suggested_at" min="{{ now()->format('Y-m-d\\TH:i') }}"></div><button class="btn danger">{{ __('ui.decline_and_notify') }}</button></form>@endif</div>
+</div></article>
+@empty<div class="card">{{ __('ui.no_requests') }}</div>@endforelse
+</div>
+@endsection

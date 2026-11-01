@@ -1,0 +1,12 @@
+/* PriestAgenda Orthodox theme for Laravel Markdown mail. */
+body, .body { background-color: #f5f1e8 !important; color: #28394f !important; font-family: Arial, Helvetica, sans-serif; }
+a { color: #344c70 !important; }
+.header { background-color: #344c70 !important; border-bottom: 3px solid #bb9653 !important; }
+.header a { color: #fff !important; font-family: Georgia, "Times New Roman", serif; letter-spacing: .04em; }
+.content-cell { padding: 30px 36px !important; }
+.inner-body { background-color: #fffdf8 !important; border: 1px solid #e5dece !important; border-radius: 8px !important; }
+.button-primary { background-color: #344c70 !important; border-color: #344c70 !important; }
+.button-primary td { background-color: #344c70 !important; }
+.button-primary a { border-color: #344c70 !important; }
+.subcopy, .footer { color: #707987 !important; }
+h1, h2, h3 { color: #344c70 !important; font-family: Georgia, "Times New Roman", serif; }
